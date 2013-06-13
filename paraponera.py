@@ -23,6 +23,10 @@ import gobject
 from time import sleep
 from config import *
 
+
+from pprint import pprint
+
+
 gtk.gdk.threads_init()
 
 encoding = locale.getpreferredencoding()
@@ -31,7 +35,7 @@ utf8conv = lambda x : unicode(x, encoding).encode('utf8')
 
 class splashScreen():     
     def __init__(self):
-        #DONT connect 'destroy' event here!
+        
         self.window = gtk.Window(gtk.WINDOW_TOPLEVEL)
         self.window.set_decorated(False)
         self.window.set_title('Paraponera')
@@ -159,7 +163,10 @@ class paraponera (object):
 		os.system('iptables --table nat --flush &') 			
 		os.system('iptables --delete-chain &') 			
 		os.system('iptables --table nat --delete-chain &')
-		os.system('rm *.pcap *.txt')
+		try:
+			os.system('rm *.pcap *.txt')
+		except:
+			pass
 		
 		pidof = ['ettercap','postgresql','driftnet','sslstrip','arpspoof','ferret','hamster','msfconsole']
 		for p in pidof:
@@ -287,19 +294,31 @@ class paraponera (object):
 
 		nm = nmap.PortScanner()
 
-		nm.scan(hosts=self.get_range(), arguments='-n -sP -PE')
+		nm.scan(hosts=self.get_range(), arguments='-O')
 
 			
-	
+		#pprint(vars(nm))
+		
+		
 		for host in nm.all_hosts():
 			
+			
+			if nm[host].has_key('osclass'):
+				for osclass in nm[host]['osclass']:
+					try:
+						osystem = format(osclass['osfamily']) + ' ' + format(osclass['osgen'])
+					except:
+						osystem = 'U/N'
+
+					
 			try:
 				hostname = socket.gethostbyaddr(host)[0]
+				
 			except:
 				hostname = ""
 
 
-			self.liststore.append([host, hostname, "U/N(beta)",gtk.gdk.pixbuf_new_from_file(os.getcwd()+'/res/eye_closed.png')])
+			self.liststore.append([host, hostname, osystem ,gtk.gdk.pixbuf_new_from_file(os.getcwd()+'/res/eye_closed.png')])
 
 			
 		self.sniff_bt.set_label('Start')
@@ -469,13 +488,13 @@ class paraponera (object):
         
 if __name__ == "__main__":
     splScr = splashScreen()
-    #If you don't do this, the splash screen will show, but wont render it's contents
+    
     while gtk.events_pending():
         gtk.main_iteration()
-    #Here you can do all that nasty things that take some time.
+    
     sleep(3) 
     
-    #We don't need splScr anymore.
+    
     splScr.window.destroy() 
     paraponera().run()
 
