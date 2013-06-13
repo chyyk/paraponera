@@ -23,10 +23,6 @@ import gobject
 from time import sleep
 from config import *
 
-
-from pprint import pprint
-
-
 gtk.gdk.threads_init()
 
 encoding = locale.getpreferredencoding()
@@ -163,10 +159,8 @@ class paraponera (object):
 		os.system('iptables --table nat --flush &') 			
 		os.system('iptables --delete-chain &') 			
 		os.system('iptables --table nat --delete-chain &')
-		try:
-			os.system('rm *.pcap *.txt')
-		except:
-			pass
+		os.system('rm *.pcap *.txt')
+
 		
 		pidof = ['ettercap','postgresql','driftnet','sslstrip','arpspoof','ferret','hamster','msfconsole']
 		for p in pidof:
@@ -239,7 +233,7 @@ class paraponera (object):
 		filewrite.write("jobs -K\r\n")
 		filewrite.write("sessions -l\r\n")
 		filewrite.close()
-		#command = 'ls /'
+		
 		if (self.open_xterm_ck.get_active()):
 			os.system('xterm -T "EXPLOIT" -e ' + msfconsole_path + ' -r autopwn')
 		else:		
@@ -296,10 +290,7 @@ class paraponera (object):
 
 		nm.scan(hosts=self.get_range(), arguments='-O')
 
-			
-		#pprint(vars(nm))
-		
-		
+
 		for host in nm.all_hosts():
 			
 			
