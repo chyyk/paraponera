@@ -28,7 +28,44 @@ gtk.gdk.threads_init()
 encoding = locale.getpreferredencoding()
 utf8conv = lambda x : unicode(x, encoding).encode('utf8')
 
-
+class Messages(gtk.Window): 
+  
+    def msg_info(self, msg):
+        msgbox = gtk.MessageDialog(self, 
+            gtk.DIALOG_DESTROY_WITH_PARENT, gtk.MESSAGE_INFO, 
+            gtk.BUTTONS_CLOSE, msg)
+        msgbox.run()
+        msgbox.destroy()
+        
+    
+    def msg_error(self,msg):
+        msgbox = gtk.MessageDialog(self, 
+            gtk.DIALOG_DESTROY_WITH_PARENT, gtk.MESSAGE_ERROR, 
+            gtk.BUTTONS_CLOSE,msg)
+        msgbox.run()
+        msgbox.destroy()
+    
+    
+    
+    def msg_question(self, msg,func):
+        msgbox = gtk.MessageDialog(self, 
+            gtk.DIALOG_DESTROY_WITH_PARENT, gtk.MESSAGE_QUESTION, 
+            gtk.BUTTONS_YES_NO, msg)
+        resp = msgbox.run()       
+        msgbox.destroy()
+        if resp == gtk.RESPONSE_YES: # ... need to improve code here
+			 eval(func)
+			 #paraponera().update()
+    
+    
+    def msg_warnnig(self, msg):
+        msgbox = gtk.MessageDialog(self, 
+            gtk.DIALOG_DESTROY_WITH_PARENT, gtk.MESSAGE_WARNING, 
+            gtk.BUTTONS_CLOSE, msg)
+        msgbox.run()
+        msgbox.destroy()
+        
+        
 class splashScreen():     
     def __init__(self):
         
@@ -151,15 +188,56 @@ class paraponera (object):
 			self.interface_txt.set_text(self.get_interface()[1][0])
 		except:
 			pass
+		
+		self.check_paths()
+		self.check_update()
 		gtk.main()
 
 
+	
+	def check_paths(self):
+		error_msg = ''
+		
+		if (os.path.isfile(sslstrip_path) == False):
+			error_msg = 'sslstrip, ' 
+		if  (os.path.isfile(arpspoof_path) == False):
+			error_msg = error_msg +'arpspoof, '
+		if (os.path.isfile(driftnet_path) == False):
+			error_msg = error_msg + 'driftnet, ' 
+		if (os.path.isfile(msfconsole_path) == False):
+			error_msg = error_msg + 'msfconsole, ' 
+		if (os.path.isfile(hamster_path) == False):
+			error_msg = error_msg + 'hamster, '
+		if (os.path.isfile(ferret_path) == False):
+			error_msg = error_msg + 'ferret, ' 
+		if (os.path.isfile(ettercap_path) == False):
+			error_msg = error_msg + 'ettercap, '
+			
+		if (error_msg):
+			Messages().msg_error('You dont have ' + error_msg + ' installed or you need to correct the paths in config.py')
+	
+	def check_update(self):
+		new_update = os.system('git rev-list HEAD...origin/master --count')
+		
+		if (new_update == 0):
+			func = 'paraponera().update()'
+			Messages().msg_question('There is a new version of Paraponera! Would you like to update?',func)
+		
+	def update(self):
+			os.system('git pull')
+			python = sys.executable
+			os.execl(python, python, * sys.argv)
+		
 	def reset_init(self):
 		os.system('iptables --flush &') 			
 		os.system('iptables --table nat --flush &') 			
 		os.system('iptables --delete-chain &') 			
 		os.system('iptables --table nat --delete-chain &')
-		os.system('rm *.pcap *.txt')
+		try:
+			os.remove('*.pcap') 
+			os.remove('*.txt')
+		except:
+			pass
 
 		
 		pidof = ['ettercap','postgresql','driftnet','sslstrip','arpspoof','ferret','hamster','msfconsole']
@@ -175,6 +253,9 @@ class paraponera (object):
 				  
 				except OSError as ex:
 				   continue 
+				   
+				   
+
 
 	def get_range(self):
 		
@@ -486,6 +567,7 @@ if __name__ == "__main__":
     sleep(3) 
     
     
-    splScr.window.destroy() 
+    splScr.window.destroy()
+    
     paraponera().run()
 
