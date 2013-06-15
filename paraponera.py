@@ -15,7 +15,7 @@ import socket, struct, os,sys,array, fcntl
 import webkit
 import glob
 import nmap
-import subprocess
+import subprocess, commands
 import signal                       
 from threading import Thread
 import pexpect
@@ -29,8 +29,8 @@ encoding = locale.getpreferredencoding()
 utf8conv = lambda x : unicode(x, encoding).encode('utf8')
 
 def get_version():
-		version = '0.1.1'
-		return version
+	version = '0.1.1'
+	return version
 
 
 class Messages(gtk.Window): 
@@ -224,16 +224,19 @@ class paraponera (object):
 			Messages().msg_error('You dont have ' + error_msg + ' installed or you need to correct the paths in config.py')
 	
 	def check_update(self):
-		new_update = os.system('git rev-list HEAD...origin/master --count')
+		os.system('git fetch origin')
+		new_update = commands.getoutput("git rev-list HEAD...origin/master --count")
 		
-		if (new_update != 0):
+		
+		if (new_update != '0'):
 			func = 'paraponera().update()'
 			Messages().msg_question('There is a new version of Paraponera! Would you like to update?',func)
 		
+		
 	def update(self):
-			os.system('git pull')
-			python = sys.executable
-			os.execl(python, python, * sys.argv)
+		os.system('git pull https://code.google.com/p/paraponera/')
+		python = sys.executable
+		os.execl(python, python, * sys.argv)
 		
 	def reset_init(self):
 		os.system('iptables --flush &') 			
