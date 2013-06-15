@@ -219,7 +219,7 @@ class paraponera (object):
 	def check_update(self):
 		new_update = os.system('git rev-list HEAD...origin/master --count')
 		
-		if (new_update == 0):
+		if (new_update != 0):
 			func = 'paraponera().update()'
 			Messages().msg_question('There is a new version of Paraponera! Would you like to update?',func)
 		
