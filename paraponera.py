@@ -28,6 +28,11 @@ gtk.gdk.threads_init()
 encoding = locale.getpreferredencoding()
 utf8conv = lambda x : unicode(x, encoding).encode('utf8')
 
+def get_version():
+		version = '0.1.1'
+		return version
+
+
 class Messages(gtk.Window): 
   
     def msg_info(self, msg):
@@ -53,10 +58,9 @@ class Messages(gtk.Window):
             gtk.BUTTONS_YES_NO, msg)
         resp = msgbox.run()       
         msgbox.destroy()
-        if resp == gtk.RESPONSE_YES: # ... need to improve code here
+        if resp == gtk.RESPONSE_YES:
 			 eval(func)
-			 #paraponera().update()
-    
+			     
     
     def msg_warnnig(self, msg):
         msgbox = gtk.MessageDialog(self, 
@@ -76,7 +80,7 @@ class splashScreen():
         main_vbox = gtk.VBox(False, 1) 
         self.window.add(main_vbox)
         hbox = gtk.HBox(False, 0)
-        self.lbl = gtk.Label("V.:0.1")
+        self.lbl = gtk.Label("V.: " + get_version())
         self.lbl.set_alignment(0.6, 0.5)
         pixbufanim = gtk.gdk.PixbufAnimation(os.getcwd() +"/res/paraponera.png")
         self.image = gtk.Image()
@@ -106,6 +110,9 @@ class paraponera (object):
 		self.autopwn_ip_txt = self.builder.get_object("autopwn_ip_txt")
 		self.exploit_txt = self.builder.get_object("exploit_txt")
 		self.msf_command_txt = self.builder.get_object("msf_command_txt")
+		
+		self.version_lb = self.builder.get_object("version_lb")
+		self.version_lb.set_label('<b>Version: </b>' + get_version())
 		
 		self.exploit_txt.modify_base(gtk.STATE_NORMAL,gtk.gdk.color_parse('#000000'))
 		self.exploit_txt.modify_text(gtk.STATE_NORMAL,gtk.gdk.color_parse('#FFFFFF'))
@@ -568,6 +575,7 @@ if __name__ == "__main__":
     
     
     splScr.window.destroy()
+    
     
     paraponera().run()
 
