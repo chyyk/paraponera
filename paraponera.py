@@ -29,7 +29,7 @@ encoding = locale.getpreferredencoding()
 utf8conv = lambda x : unicode(x, encoding).encode('utf8')
 
 def get_version():
-	version = '0.1.1'
+	version = '0.1.1b'
 	return version
 
 
