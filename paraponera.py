@@ -29,7 +29,7 @@ encoding = locale.getpreferredencoding()
 utf8conv = lambda x : unicode(x, encoding).encode('utf8')
 
 def get_version():
-	version = '0.1.1b'
+	version = commands.getoutput('git log --abbrev-commit --max-count=1 | grep -i "commit"').split(' ')[1]
 	return version
 
 
@@ -243,9 +243,11 @@ class paraponera (object):
 		os.system('iptables --table nat --flush &') 			
 		os.system('iptables --delete-chain &') 			
 		os.system('iptables --table nat --delete-chain &')
+		
 		try:
-			os.remove('*.pcap') 
-			os.remove('*.txt')
+			os.system('rm ' + os.getcwd()+'/*.pcap') 
+			os.system('rm ' + os.getcwd()+'/*.txt')
+			os.system('rm ' + os.getcwd()+'/images/*.*')
 		except:
 			pass
 
@@ -366,7 +368,9 @@ class paraponera (object):
 		
 		html = ''
 		for image in (list_images):
-			html = '<img src="' + image + '">' + html
+			
+			if (image != os.getcwd() +'/images/readme'):
+				html = '<img src="' + image + '">' + html
 		
 		if (html==''):
 			html = '<center><small>No images captured yet...</small></center>'
@@ -380,8 +384,7 @@ class paraponera (object):
 		nm = nmap.PortScanner()
 
 		nm.scan(hosts=self.get_range(), arguments='-O')
-
-
+		
 		for host in nm.all_hosts():
 			
 			
@@ -401,8 +404,9 @@ class paraponera (object):
 
 
 			self.liststore.append([host, hostname, osystem ,gtk.gdk.pixbuf_new_from_file(os.getcwd()+'/res/eye_closed.png')])
-
 			
+			
+						
 		self.sniff_bt.set_label('Start')
 		
 		
@@ -579,6 +583,9 @@ if __name__ == "__main__":
     
     splScr.window.destroy()
     
-    
+    if not os.geteuid()==0:
+		Messages().msg_error('Sorry you must be root to run Paraponera!')
+		sys.exit(1)
+		
     paraponera().run()
 

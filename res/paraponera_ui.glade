@@ -479,7 +479,7 @@
                 </child>
                 <child>
                   <object class="GtkLabel" id="version_lb">
-                    <property name="width_request">118</property>
+                    <property name="width_request">128</property>
                     <property name="height_request">80</property>
                     <property name="visible">True</property>
                     <property name="can_focus">False</property>
@@ -488,7 +488,7 @@
                     <property name="justify">center</property>
                   </object>
                   <packing>
-                    <property name="x">302</property>
+                    <property name="x">287</property>
                     <property name="y">258</property>
                   </packing>
                 </child>
