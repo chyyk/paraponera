@@ -1,10 +1,31 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <interface>
   <!-- interface-requires gtk+ 3.0 -->
+  <object class="GtkImage" id="atck_img">
+    <property name="visible">True</property>
+    <property name="can_focus">False</property>
+    <property name="stock">gtk-no</property>
+  </object>
+  <object class="GtkFileFilter" id="filefilter1"/>
   <object class="GtkImage" id="image2">
     <property name="visible">True</property>
     <property name="can_focus">False</property>
-    <property name="stock">gtk-apply</property>
+    <property name="stock">gtk-media-play</property>
+  </object>
+  <object class="GtkImage" id="refresh_img">
+    <property name="visible">True</property>
+    <property name="can_focus">False</property>
+    <property name="stock">gtk-redo</property>
+  </object>
+  <object class="GtkImage" id="sniff_img">
+    <property name="visible">True</property>
+    <property name="can_focus">False</property>
+    <property name="stock">gtk-execute</property>
+  </object>
+  <object class="GtkImage" id="sniff_img1">
+    <property name="visible">True</property>
+    <property name="can_focus">False</property>
+    <property name="stock">gtk-execute</property>
   </object>
   <object class="GtkTextBuffer" id="textbuffer1"/>
   <object class="GtkWindow" id="window1">
@@ -110,18 +131,17 @@
                   <object class="GtkButton" id="sniff_bt">
                     <property name="label" translatable="yes">Start</property>
                     <property name="use_action_appearance">False</property>
-                    <property name="width_request">100</property>
+                    <property name="width_request">174</property>
                     <property name="height_request">32</property>
                     <property name="visible">True</property>
                     <property name="can_focus">True</property>
                     <property name="receives_default">True</property>
                     <property name="tooltip_text" translatable="yes">Scan Computer in Network</property>
                     <property name="use_action_appearance">False</property>
-                    <property name="image">image2</property>
                     <signal name="clicked" handler="sniff_bt_clicked" swapped="no"/>
                   </object>
                   <packing>
-                    <property name="x">565</property>
+                    <property name="x">530</property>
                     <property name="y">6</property>
                   </packing>
                 </child>
@@ -163,10 +183,30 @@
                     <property name="receives_default">True</property>
                     <property name="tooltip_text" translatable="yes">Sniff Computer that is not listed</property>
                     <property name="use_action_appearance">False</property>
+                    <property name="image">sniff_img</property>
                     <signal name="clicked" handler="manual_bt_clicked_cb" swapped="no"/>
                   </object>
                   <packing>
                     <property name="x">265</property>
+                    <property name="y">423</property>
+                  </packing>
+                </child>
+                <child>
+                  <object class="GtkButton" id="stop_bt">
+                    <property name="label" translatable="yes">Stop</property>
+                    <property name="use_action_appearance">False</property>
+                    <property name="width_request">174</property>
+                    <property name="height_request">32</property>
+                    <property name="visible">True</property>
+                    <property name="can_focus">True</property>
+                    <property name="receives_default">True</property>
+                    <property name="has_tooltip">True</property>
+                    <property name="use_action_appearance">False</property>
+                    <property name="image">sniff_img1</property>
+                    <signal name="clicked" handler="stop_bt_clicked_cb" swapped="no"/>
+                  </object>
+                  <packing>
+                    <property name="x">530</property>
                     <property name="y">423</property>
                   </packing>
                 </child>
@@ -239,16 +279,238 @@
                 <property name="visible">True</property>
                 <property name="can_focus">False</property>
                 <child>
-                  <object class="GtkScrolledWindow" id="sessions_scroll">
-                    <property name="width_request">718</property>
-                    <property name="height_request">461</property>
+                  <object class="GtkScrolledWindow" id="scrolledwindow4">
+                    <property name="width_request">714</property>
+                    <property name="height_request">281</property>
                     <property name="visible">True</property>
                     <property name="can_focus">True</property>
                     <property name="shadow_type">in</property>
                     <child>
-                      <placeholder/>
+                      <object class="GtkViewport" id="viewport1">
+                        <property name="visible">True</property>
+                        <property name="can_focus">False</property>
+                        <property name="shadow_type">none</property>
+                        <child>
+                          <object class="GtkLabel" id="filter_lb">
+                            <property name="visible">True</property>
+                            <property name="can_focus">False</property>
+                            <property name="xalign">0.05000000074505806</property>
+                            <property name="yalign">0.05000000074505806</property>
+                            <property name="use_markup">True</property>
+                            <property name="selectable">True</property>
+                          </object>
+                        </child>
+                      </object>
                     </child>
                   </object>
+                  <packing>
+                    <property name="x">2</property>
+                    <property name="y">173</property>
+                  </packing>
+                </child>
+                <child>
+                  <object class="GtkFrame" id="fram1">
+                    <property name="width_request">710</property>
+                    <property name="height_request">75</property>
+                    <property name="visible">True</property>
+                    <property name="can_focus">False</property>
+                    <property name="label_xalign">0</property>
+                    <child>
+                      <object class="GtkAlignment" id="alignment1">
+                        <property name="visible">True</property>
+                        <property name="can_focus">False</property>
+                        <property name="left_padding">12</property>
+                        <child>
+                          <object class="GtkFixed" id="fixed2">
+                            <property name="visible">True</property>
+                            <property name="can_focus">False</property>
+                            <child>
+                              <object class="GtkFileChooserButton" id="filter_ch">
+                                <property name="width_request">155</property>
+                                <property name="height_request">33</property>
+                                <property name="visible">True</property>
+                                <property name="can_focus">False</property>
+                                <property name="has_tooltip">True</property>
+                                <property name="tooltip_markup" translatable="yes">Open Filter</property>
+                                <property name="tooltip_text" translatable="yes">Open Filter</property>
+                                <property name="orientation">vertical</property>
+                                <property name="create_folders">False</property>
+                                <property name="title" translatable="yes">Select Filter</property>
+                                <signal name="file-set" handler="filter_ch_file_set_cb" swapped="no"/>
+                              </object>
+                              <packing>
+                                <property name="x">8</property>
+                                <property name="y">7</property>
+                              </packing>
+                            </child>
+                            <child>
+                              <object class="GtkEntry" id="filter1_txt">
+                                <property name="width_request">160</property>
+                                <property name="height_request">33</property>
+                                <property name="can_focus">True</property>
+                                <property name="invisible_char">●</property>
+                              </object>
+                              <packing>
+                                <property name="x">254</property>
+                                <property name="y">7</property>
+                              </packing>
+                            </child>
+                            <child>
+                              <object class="GtkEntry" id="filter2_txt">
+                                <property name="width_request">160</property>
+                                <property name="height_request">33</property>
+                                <property name="can_focus">True</property>
+                                <property name="invisible_char">●</property>
+                              </object>
+                              <packing>
+                                <property name="x">510</property>
+                                <property name="y">7</property>
+                              </packing>
+                            </child>
+                            <child>
+                              <object class="GtkLabel" id="filter1_lb">
+                                <property name="width_request">100</property>
+                                <property name="height_request">33</property>
+                                <property name="can_focus">False</property>
+                                <property name="label" translatable="yes">label</property>
+                              </object>
+                              <packing>
+                                <property name="x">161</property>
+                                <property name="y">7</property>
+                              </packing>
+                            </child>
+                            <child>
+                              <object class="GtkLabel" id="filter2_lb">
+                                <property name="width_request">100</property>
+                                <property name="height_request">33</property>
+                                <property name="can_focus">False</property>
+                                <property name="label" translatable="yes">label</property>
+                              </object>
+                              <packing>
+                                <property name="x">416</property>
+                                <property name="y">7</property>
+                              </packing>
+                            </child>
+                          </object>
+                        </child>
+                      </object>
+                    </child>
+                    <child type="label">
+                      <object class="GtkLabel" id="label7">
+                        <property name="visible">True</property>
+                        <property name="can_focus">False</property>
+                        <property name="label" translatable="yes">&lt;b&gt;Filter&lt;/b&gt;</property>
+                        <property name="use_markup">True</property>
+                      </object>
+                    </child>
+                  </object>
+                  <packing>
+                    <property name="x">3</property>
+                    <property name="y">3</property>
+                  </packing>
+                </child>
+                <child>
+                  <object class="GtkFrame" id="fram2">
+                    <property name="width_request">710</property>
+                    <property name="height_request">80</property>
+                    <property name="visible">True</property>
+                    <property name="can_focus">False</property>
+                    <property name="label_xalign">0</property>
+                    <child>
+                      <object class="GtkAlignment" id="alignment2">
+                        <property name="visible">True</property>
+                        <property name="can_focus">False</property>
+                        <property name="left_padding">12</property>
+                        <child>
+                          <object class="GtkFixed" id="fixed8">
+                            <property name="visible">True</property>
+                            <property name="can_focus">False</property>
+                            <child>
+                              <object class="GtkEntry" id="filter_gateway_txt">
+                                <property name="width_request">164</property>
+                                <property name="height_request">33</property>
+                                <property name="can_focus">True</property>
+                                <property name="invisible_char">●</property>
+                                <property name="invisible_char_set">True</property>
+                              </object>
+                              <packing>
+                                <property name="x">93</property>
+                                <property name="y">11</property>
+                              </packing>
+                            </child>
+                            <child>
+                              <object class="GtkEntry" id="filter_target_txt">
+                                <property name="width_request">164</property>
+                                <property name="height_request">33</property>
+                                <property name="can_focus">True</property>
+                                <property name="tooltip_markup" translatable="yes">Leave it blank for all the network</property>
+                                <property name="invisible_char">●</property>
+                                <property name="invisible_char_set">True</property>
+                              </object>
+                              <packing>
+                                <property name="x">358</property>
+                                <property name="y">11</property>
+                              </packing>
+                            </child>
+                            <child>
+                              <object class="GtkLabel" id="filter1_lb1">
+                                <property name="width_request">100</property>
+                                <property name="height_request">33</property>
+                                <property name="can_focus">False</property>
+                                <property name="label" translatable="yes">&lt;b&gt;Gateway:&lt;/b&gt;</property>
+                                <property name="use_markup">True</property>
+                              </object>
+                              <packing>
+                                <property name="y">11</property>
+                              </packing>
+                            </child>
+                            <child>
+                              <object class="GtkLabel" id="filter2_lb1">
+                                <property name="width_request">100</property>
+                                <property name="height_request">33</property>
+                                <property name="can_focus">False</property>
+                                <property name="label" translatable="yes">&lt;b&gt;Target:&lt;/b&gt;</property>
+                                <property name="use_markup">True</property>
+                              </object>
+                              <packing>
+                                <property name="x">273</property>
+                                <property name="y">11</property>
+                              </packing>
+                            </child>
+                            <child>
+                              <object class="GtkButton" id="filter_start_bt">
+                                <property name="label" translatable="yes">Start Spoofing</property>
+                                <property name="use_action_appearance">False</property>
+                                <property name="width_request">127</property>
+                                <property name="height_request">33</property>
+                                <property name="visible">True</property>
+                                <property name="can_focus">True</property>
+                                <property name="receives_default">True</property>
+                                <property name="use_action_appearance">False</property>
+                                <property name="image">image2</property>
+                                <signal name="clicked" handler="filter_start_bt_clicked_cb" swapped="no"/>
+                              </object>
+                              <packing>
+                                <property name="x">544</property>
+                                <property name="y">11</property>
+                              </packing>
+                            </child>
+                          </object>
+                        </child>
+                      </object>
+                    </child>
+                    <child type="label">
+                      <object class="GtkLabel" id="label8">
+                        <property name="visible">True</property>
+                        <property name="can_focus">False</property>
+                        <property name="use_markup">True</property>
+                      </object>
+                    </child>
+                  </object>
+                  <packing>
+                    <property name="x">3</property>
+                    <property name="y">79</property>
+                  </packing>
                 </child>
               </object>
               <packing>
@@ -256,11 +518,11 @@
               </packing>
             </child>
             <child type="tab">
-              <object class="GtkLabel" id="sessionsbt">
+              <object class="GtkLabel" id="spoofingbt">
                 <property name="visible">True</property>
                 <property name="can_focus">False</property>
                 <property name="tooltip_text" translatable="yes">Hijack Sessions</property>
-                <property name="label" translatable="yes">Sessions</property>
+                <property name="label" translatable="yes">Spoofing</property>
               </object>
               <packing>
                 <property name="position">2</property>
@@ -282,6 +544,7 @@
                     <property name="receives_default">True</property>
                     <property name="margin_right">573</property>
                     <property name="use_action_appearance">False</property>
+                    <property name="image">refresh_img</property>
                     <signal name="clicked" handler="get_password_bt_clicked_cb" swapped="no"/>
                   </object>
                 </child>
@@ -357,6 +620,7 @@
                     <property name="can_focus">True</property>
                     <property name="receives_default">True</property>
                     <property name="use_action_appearance">False</property>
+                    <property name="image">atck_img</property>
                     <signal name="clicked" handler="autopwn_bt_clicked_cb" swapped="no"/>
                   </object>
                   <packing>

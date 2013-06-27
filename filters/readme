@@ -1,0 +1,56 @@
+Paraponera lets you create custom Ettercap Filters for MiTM attacks by Spoofing your targets.
+If you wish to create your own custom filters please read first the examples of Ettercap (/usr/share/ettercap/etter.filter.examples).
+I tried to make this as simple as possible.
+
+All filter must start with # Author, Description and most important Type “tags” in the header of the file and end with || .
+
+Example of header:
+
+# Author: Bl4ck5w4n ||
+# Description: This is a sample header of a filter
+# Example of break line in the description and how to add links <a href=”http://bl4ck5w4n.blogspot.com”>http://bl4ck5w4n.blogspot.com</a>||
+# Type: Single ||
+
+
+Followed by (accept enconding):
+
+if (ip.proto == TCP && tcp.dst == 80) {
+
+   if (search(DATA.data, "Accept-Encoding")) {
+
+      replace("Accept-Encoding", "Accept-Rubbish!"); 
+
+   }
+
+}
+
+
+
+What is Type?
+
+The Type could be None, Single or Multiple depending on what you wish to do.
+For instance if you wish to replace an image you use Single because you're only going to change one string:
+
+replace("img src=", "img src=\"REPLACE_ME\" ");
+   
+
+If you wish to change two string like replace one word for another then you Multiple:
+
+replace("REPLACE_ME", "WITH_ME");
+
+
+None:
+Is used when you don't need to replace anything (ex: log traffic, drop connection) 
+
+REPLACE_ME and WITH_ME:
+
+You have to define the place were Paraponera so that it knows where to substitute strings and for the Single you will only need the REPLACE_ME and of course for the Multiple use REPLACE_ME and WITH_ME.
+
+IMPORTANT Note: All caps lock matter
+
+
+
+
+And thats it, see the filters that are already made for example.
+
+if you wish to see your filters in Paraponera or requests: http://bl4ck5w4n.blogspot.com/p/paraponera-filters.html

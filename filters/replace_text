@@ -1,0 +1,17 @@
+# Author: Bl4ck5w4n ||
+# Description: Replace text in webpages ||
+# Type: Multiple ||
+
+if (ip.proto == TCP && tcp.dst == 80) {
+   if (search(DATA.data, "Accept-Encoding")) {
+      replace("Accept-Encoding", "Accept-Rubbish!"); 
+	  msg("zapped Accept-Encoding!\n");
+   }
+}
+
+
+if (ip.proto == TCP && search(DATA.data, "REPLACE_ME")){
+replace("REPLACE_ME", "WITH_ME");
+msg("filter ran");
+
+}
