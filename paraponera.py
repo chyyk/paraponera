@@ -394,7 +394,7 @@ class paraponera (object):
 
 		nm.scan(hosts=self.get_range(), arguments='-O')
 		
-		
+		osystem = ''
 
 		for host in nm.all_hosts():
 			
