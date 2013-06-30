@@ -14,12 +14,15 @@ if [[ "$KVER" =~ Debian ]]; then
 	fi
 	
 	if [[ "$(cat /etc/debian_version )" =~ 7.0  ]]; then
-		echo deb http://ftp.us.debian.org/debian unstable main contrib >> /etc/apt/sources.list
-		apt-get update > /tmp/parapondera_install.log
-		apt-get install python-nmap python-glade2 python-webkit python-pexpect ettercap-text-only sslstrip dsniff driftnet nmap -y >> /tmp/parapondera_install.log
+		if [[ ! $( cat /etc/apt/sources.list | grep -i 'unstable' ) ]]; then
+			echo deb http://ftp.us.debian.org/debian unstable main contrib >> /etc/apt/sources.list
+			apt-get update  > /tmp/parapondera_install.log
+		fi
+		export DEBIAN_FRONTEND=noninteractive
+		apt-get install python-nmap python-glade2 ettercap-text-only sslstrip dsniff driftnet nmap -q -y >> /tmp/parapondera_install.log
 		head -n -1 /etc/apt/sources.list > sources.list; mv sources.list /etc/apt/sources.list
 		DISTRO='Debian'
-	fi	
+	fi
 
 elif [[ "$KVER" =~ fc18 ]]; then
 	yum install pywebkitgtk sslstrip dsniff driftnet python-nmap ettercap python-pexpect wget -y > /tmp/parapondera_install.log
@@ -72,18 +75,25 @@ if [ ! -f "${MSFC}" ]; then
     exit 1
 fi	
 
-echo -e "\x1B[01;34m[*]\x1B[0m Creating symlinks"
+
 if [ ! -f /usr/bin/msfconsole ]; then
+	echo -e "\x1B[01;34m[*]\x1B[0m Creating symlinks"
 	ln -sf ${MSFC} /usr/bin/msfconsole
 fi
 
 echo -e "\x1B[01;34m[*]\x1B[0m Cleaning up installation"
-rm -Rf downloads.metasploit.com
+if [ -d downloads.metasploit.com ]; then
+	rm -Rf downloads.metasploit.com
+fi
 
 if [ "${ARCH}" == 'x86_64' ]; then
-	rm metasploit-latest-linux-x64-installer.run
+	if [ -f metasploit-latest-linux-x64-installer.run ]; then
+		rm metasploit-latest-linux-x64-installer.run
+	fi
 else
-	rm metasploit-latest-linux-installer.run
+	if [ -f metasploit-latest-linux-installer.run ]; then	
+		rm metasploit-latest-linux-installer.run
+	fi
 fi	
 
 echo -e "\x1B[01;32m[*]\x1B[0m Installation Complete. Enjoy"
