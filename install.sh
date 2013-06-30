@@ -19,7 +19,7 @@ if [[ "$KVER" =~ Debian ]]; then
 			apt-get update  > /tmp/parapondera_install.log
 		fi
 		export DEBIAN_FRONTEND=noninteractive
-		apt-get install python-nmap python-glade2 ettercap-text-only sslstrip dsniff driftnet nmap -q -y >> /tmp/parapondera_install.log
+		apt-get install python-nmap python-glade2 python-webkit python-pexpect ettercap-text-only sslstrip dsniff driftnet nmap -q -y > /tmp/parapondera_install.log
 		head -n -1 /etc/apt/sources.list > sources.list; mv sources.list /etc/apt/sources.list
 		DISTRO='Debian'
 	fi
@@ -42,9 +42,20 @@ if [[ ! $DISTRO ]]; then
     exit 1
 fi
 
+updatedb
+ETTERCONF=`locate -n1 etter.conf`
+
+if [ -f "${ETTERCONF}" ]; then
+	echo -e "\x1B[01;34m[*]\x1B[0m Changing Ettercap etter.conf file"
+	sed -i 's/ec_uid = 65534/ec_uid = 0 /g' ${ETTERCONF}
+	sed -i 's/ec_gid = 65534/ec_gid = 0 /g' ${ETTERCONF}
+	sed -i 's/#redir_command_on = "iptables -t nat -A PREROUTING -i %iface -p tcp --dport %port -j REDIRECT --to-port %rport"/redir_command_on = "iptables -t nat -A PREROUTING -i %iface -p tcp --dport %port -j REDIRECT --to-port %rport" /g' ${ETTERCONF}
+	sed -i 's/#redir_command_off = "iptables -t nat -D PREROUTING -i %iface -p tcp --dport %port -j REDIRECT --to-port %rport"/redir_command_off = "iptables -t nat -D PREROUTING -i %iface -p tcp --dport %port -j REDIRECT --to-port %rport" /g' ${ETTERCONF}
+fi
+
 
 echo -e "\x1B[01;34m[*]\x1B[0m Checking if Metasploit Framework is installed"
-updatedb
+
 MSFC=`locate -n1 msfconsole`
 
 if [ ! -f "${MSFC}" ]; then
