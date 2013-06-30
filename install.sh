@@ -15,7 +15,7 @@ if [[ "$KVER" =~ Debian ]]; then
 	
 	if [[ "$(cat /etc/debian_version )" =~ 7.0  ]]; then
 		echo deb http://ftp.us.debian.org/debian unstable main contrib >> /etc/apt/sources.list
-		apt-get update > > /tmp/parapondera_install.log
+		apt-get update > /tmp/parapondera_install.log
 		apt-get install python-nmap python-glade2 python-webkit python-pexpect ettercap-text-only sslstrip dsniff driftnet nmap -y >> /tmp/parapondera_install.log
 		head -n -1 /etc/apt/sources.list > sources.list; mv sources.list /etc/apt/sources.list
 		DISTRO='Debian'
