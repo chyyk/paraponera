@@ -90,6 +90,8 @@ class splashScreen():
         main_vbox.pack_start(self.lbl, True, True)
         self.window.show_all()
         
+
+        
 class paraponera (object):
 
 	def __init__(self):
@@ -254,8 +256,8 @@ class paraponera (object):
 		
 	def update(self):
 		os.system('git pull https://code.google.com/p/paraponera/')
+		os.system("bash install.sh")
 		python = sys.executable
-		os.system("./install.sh")
 		os.execl(python, python, * sys.argv)
 		
 	def reset_init(self):
@@ -420,6 +422,7 @@ class paraponera (object):
 	
 	def stop_bt_clicked_cb(self,*args):
 		self.terminate_pid()
+		
 		self.manual_bt.set_label('Sniff')
 		for row in self.liststore:
 			self.liststore.set_value(row.iter,3,gtk.gdk.pixbuf_new_from_file(os.getcwd() + '/res/eye_closed.png'))
@@ -701,7 +704,7 @@ class paraponera (object):
         
 if __name__ == "__main__":
     splScr = splashScreen()
-    
+        
     while gtk.events_pending():
         gtk.main_iteration()
     
