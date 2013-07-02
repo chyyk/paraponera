@@ -9,7 +9,7 @@ echo -e "\x1B[01;34m[*]\x1B[0m Installing Paraponera dependencies"
 if [[ "$KVER" =~ Debian ]]; then
 	
 	if [[ "$(cat /etc/debian_version )" =~ Kali  ]]; then
-		apt-get install python-nmap -y > /tmp/parapondera_install.log
+		#NOTHING TO INSTALL
 		DISTRO='Kali'
 	fi
 	
@@ -19,13 +19,13 @@ if [[ "$KVER" =~ Debian ]]; then
 			apt-get update  > /tmp/parapondera_install.log
 		fi
 		export DEBIAN_FRONTEND=noninteractive
-		apt-get install python-nmap python-glade2 python-webkit python-pexpect ettercap-text-only sslstrip dsniff driftnet nmap -q -y > /tmp/parapondera_install.log
+		apt-get install python-scapy python-glade2 python-webkit python-pexpect ettercap-text-only sslstrip dsniff driftnet nmap -q -y > /tmp/parapondera_install.log
 		head -n -1 /etc/apt/sources.list > sources.list; mv sources.list /etc/apt/sources.list
 		DISTRO='Debian'
 	fi
 
 elif [[ "$KVER" =~ fc18 ]]; then
-	yum install pywebkitgtk sslstrip dsniff driftnet python-nmap ettercap python-pexpect wget -y > /tmp/parapondera_install.log
+	yum install pywebkitgtk sslstrip dsniff driftnet scapy ettercap python-pexpect wget -y > /tmp/parapondera_install.log
 	
 	if [ ! -f /usr/sbin/ettercap ]; then
 		ln -sf /usr/bin/ettercap /usr/sbin/ettercap
@@ -33,7 +33,7 @@ elif [[ "$KVER" =~ fc18 ]]; then
 	DISTRO='Fedora'
 
 elif [[ "$KVER" =~ buntu ]]; then
-	sudo apt-get install python-nmap python-glade2 python-webkit ettercap-text-only sslstrip dsniff driftnet nmap --force-yes -y > /tmp/paraponera_install.log
+	sudo apt-get install python-scapy python-glade2 python-webkit ettercap-text-only sslstrip dsniff driftnet nmap --force-yes -y > /tmp/paraponera_install.log
 	DISTRO='Ubuntu'
 fi
 

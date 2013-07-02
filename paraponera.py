@@ -14,7 +14,6 @@ import pygtk, gtk, gtk.glade, locale
 import socket, struct, os,sys,array, fcntl
 import webkit
 import glob
-import nmap
 import subprocess, commands
 import signal                       
 from threading import Thread
@@ -22,6 +21,7 @@ import pexpect
 import gobject
 from time import sleep
 from config import *
+from scapy.all import srp,Ether,ARP,conf
 
 gtk.gdk.threads_init()
 
@@ -117,11 +117,11 @@ class paraponera (object):
 		self.filter1_txt = self.builder.get_object("filter1_txt")
 		self.filter2_txt = self.builder.get_object("filter2_txt")
 		
+		
+		
 		self.filter_ch= self.builder.get_object("filter_ch")
 		self.filter_ch.set_current_folder(os.getcwd() +"/filters")
 		
-		
-
 		
 		
 		self.filter1_lb = self.builder.get_object("filter1_lb")
@@ -204,6 +204,7 @@ class paraponera (object):
 		try:
 			self.gateway_txt.set_text(self.get_gateway())
 			self.filter_gateway_txt.set_text(self.get_gateway())
+			
 		except:
 			pass
 		
@@ -222,7 +223,8 @@ class paraponera (object):
 		gtk.main()
 
 
-	
+		
+		
 	def check_paths(self):
 		error_msg = ''
 		
@@ -256,10 +258,10 @@ class paraponera (object):
 		os.execl(python, python, * sys.argv)
 		
 	def reset_init(self):
-		os.system('iptables --flush &') 			
-		os.system('iptables --table nat --flush &') 			
-		os.system('iptables --delete-chain &') 			
-		os.system('iptables --table nat --delete-chain &')
+		#os.system('iptables --flush &') 			
+		#os.system('iptables --table nat --flush &') 			
+		#os.system('iptables --delete-chain &') 			
+		#os.system('iptables --table nat --delete-chain &')
 		
 		try:
 			os.system('rm ' + os.getcwd()+'/*.pcap') 
@@ -390,31 +392,24 @@ class paraponera (object):
 
 	def scan_network(self):
 
-		nm = nmap.PortScanner()
+	
+		conf.verb=0
+		ans,unans=srp(Ether(dst="ff:ff:ff:ff:ff:ff")/ARP(pdst=self.get_range()),timeout=2)
 
-		nm.scan(hosts=self.get_range(), arguments='-O')
-		
-		osystem = ''
 
-		for host in nm.all_hosts():
-			
-			
-			if nm[host].has_key('osclass'):
-				for osclass in nm[host]['osclass']:
-					try:
-						osystem = format(osclass['osfamily']) + ' ' + format(osclass['osgen'])
-					except:
-						osystem = 'U/N'
+		for snd,rcv in ans:
+			ip = rcv.sprintf(r"%ARP.psrc%")
 
-					
 			try:
-				hostname = socket.gethostbyaddr(host)[0]
-				
+				hostname = socket.gethostbyaddr(ip)[0]
+
+
 			except:
 				hostname = ""
 
-
-			self.liststore.append([host, hostname, osystem ,gtk.gdk.pixbuf_new_from_file(os.getcwd()+'/res/eye_closed.png')])
+			osystem = 'U/N'
+			
+			self.liststore.append([ip, hostname, osystem ,gtk.gdk.pixbuf_new_from_file(os.getcwd()+'/res/eye_closed.png')])
 			
 			
 						
