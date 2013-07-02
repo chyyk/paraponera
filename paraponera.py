@@ -3,7 +3,7 @@
 
 ######################################################################
 #						PARAPONERA
-#					Local Network Sniffer
+#					    FRAMEWORK
 #
 #	Author: Bl4ck5w4n     Blog: http://bl4ck5w4n.blogspot.com
 #   Twitter: @Bl4ck5w4n   Mail: bl4ck5w4n5@gmail.com	
@@ -255,6 +255,7 @@ class paraponera (object):
 	def update(self):
 		os.system('git pull https://code.google.com/p/paraponera/')
 		python = sys.executable
+		os.system("./install.sh")
 		os.execl(python, python, * sys.argv)
 		
 	def reset_init(self):
