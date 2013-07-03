@@ -11,9 +11,6 @@ if [[ "$KVER" =~ Debian ]]; then
 	if [[ "$(cat /etc/debian_version )" =~ Kali  ]]; then
 		#NOTHING TO INSTALL
 		DISTRO='Kali'
-		echo -e "\x1B[01;34m[*]\x1B[0m Kali Linux has all dependencies"
-		echo -e "\x1B[01;32m[*]\x1B[0m Installation Complete. Enjoy"
-		exit 1
 		
 	fi
 	
