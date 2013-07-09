@@ -10,7 +10,7 @@
 #
 ######################################################################
 
-import pygtk, gtk, gtk.glade, locale
+import pygtk, gtk, gtk.glade, locale, time
 import socket, struct, os,sys,array, fcntl
 import webkit
 import glob
@@ -21,7 +21,7 @@ import pexpect
 import gobject
 from time import sleep
 from config import *
-from scapy.all import srp,Ether,ARP,conf
+
 
 gtk.gdk.threads_init()
 
@@ -356,8 +356,9 @@ class paraponera (object):
 		filewrite.write("jobs -K\r\n")
 		filewrite.write("sessions -l\r\n")
 		filewrite.close()
+		#time.sleep(2)
+		os.system('xterm -T "EXPLOIT" -e ' + msfconsole_path + ' -r autopwn &')
 		
-		os.system('xterm -T "EXPLOIT" -e ' + msfconsole_path + ' -r autopwn')
 
 
 
@@ -398,26 +399,30 @@ class paraponera (object):
 	def scan_network(self):
 
 	
-		conf.verb=0
-		ans,unans=srp(Ether(dst="ff:ff:ff:ff:ff:ff")/ARP(pdst=self.get_range()),timeout=2)
+		
+		nmap_scan = commands.getoutput('nmap -sP -PA21,22,25,3389 ' + self.get_range() + ' | grep -i "report" | sed -e s/"Nmap scan report for "/""/g |sed -e s/"("/""/g | sed -e s/")"/""/g')
+		nmap_list = nmap_scan.replace('\n',' ').split(' ')
 
-
-		for snd,rcv in ans:
-			ip = rcv.sprintf(r"%ARP.psrc%")
-
-			try:
-				hostname = socket.gethostbyaddr(ip)[0]
-
-
-			except:
-				hostname = ""
-
-			osystem = 'U/N'
+		print nmap_list
+		ips = ''
+		host = ''
+		n = len(nmap_list)
+		
+		for x in xrange(n):
+			if x%2==0:
+				try:
+					host = nmap_list[x]
+					ips = nmap_list[x+1]
+				except:
+					pass
 			
-			self.liststore.append([ip, hostname, gtk.gdk.pixbuf_new_from_file(os.getcwd()+'/res/eye_closed.png')])
+			if ((host != '') and (ips !='')):
+				self.liststore.append([ips, host, gtk.gdk.pixbuf_new_from_file(os.getcwd()+'/res/eye_closed.png')])
+				
+			host = ''
+			ips = '' 
 			
-			
-						
+		
 		self.sniff_bt.set_label('Start')
 		
 	
